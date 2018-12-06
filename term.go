@@ -1,16 +1,25 @@
 package term
 
 import (
+	"fmt"
 	"time"
 
 	termbox "github.com/nsf/termbox-go"
 )
 
 type Screen struct {
-	Input chan [][]rune
+	Input     chan [][]rune
+	UserInput chan rune
 }
 
-func (s Screen) Run() {
+func NewScreen() *Screen {
+	return &Screen{
+		Input:     make(chan [][]rune),
+		UserInput: make(chan rune),
+	}
+}
+
+func (s Screen) Run(frameRate time.Duration) {
 	err := termbox.Init()
 	if err != nil {
 		panic(err)
@@ -18,8 +27,14 @@ func (s Screen) Run() {
 	defer termbox.Close()
 
 	termbox.HideCursor()
+	go func() {
+		for {
+			e := termbox.PollEvent()
+			fmt.Println(e)
+			s.UserInput <- e.Ch
+		}
+	}()
 	for {
-		frameRate := time.Duration(100 * time.Millisecond)
 		start := time.Now()
 		select {
 		case inp := <-s.Input:
