@@ -54,7 +54,8 @@ func display(inp [][]rune) {
 	termbox.Clear(termbox.ColorBlack, termbox.ColorBlue)
 	for y, row := range inp {
 		for x, cell := range row {
-			termbox.SetCell(x, y, rune(cell), termbox.ColorBlue, termbox.ColorWhite)
+			termbox.SetCell(x*2, y, rune(cell), termbox.ColorBlue, termbox.ColorWhite)
+			termbox.SetCell(x*2-1, y, rune(cell), termbox.ColorBlue, termbox.ColorWhite)
 		}
 	}
 	termbox.Flush()
